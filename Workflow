@@ -1,0 +1,37 @@
+=====
+PARKR
+-----
+
+Workflow design for PARKR backend.
+
+MVP
+
+- Initial Setup
+  - Create Trello
+  - Create Repo
+  - Install vapor (requires Swift 3.1 or later)
+  - Get heroku app up and running
+  - GIS tools as needed
+  - Slack channel
+  - Courseboard product
+
+- Cleaning and prepping data
+  - Look for missing data entries
+  - Build schema of data that we're keeping
+
+- Load data manually from GeoJSON file into database
+  - Build class for data we keep
+  - Build route/script for entering into the database from GeoJSON file
+  - Create method for checking for duplicates and verifying unique entries
+
+- Creating tools for serving up data on API
+ - Method that takes in bounding rectangle of and returns a subset of intersecting blocks using SQL query(s)
+ - Method that takes in subset and returns the closest block (Already written for the iOS app)
+    - Must also include threshold of nearby distance before returning "nil"
+ - Method for returning geocoded address (Already written on for front end)
+ - Method that takes in a block's data and returns the next time a person will have to move for that block
+
+- Normalizing data (for each dataset)
+  - Build custom model for the dataset (check schema)
+  - Method for determining if a line geometry is the same as other geometries in the database
+  - Method for checking if data is new and needs to be updated or merged
