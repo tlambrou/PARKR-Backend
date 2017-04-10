@@ -1,15 +1,11 @@
 import Vapor
 import VaporPostgreSQL
+import Alamofire
+import ObjectMapper
 
-let drop = Droplet(preparations: [Acronym.self])
+let drop = Droplet(preparations: [Acronym.self, ParkingRule.self])
 
 try drop.addProvider(VaporPostgreSQL.Provider.self)
-
-drop.get { req in
-    return try drop.view.make("welcome", [
-    	"message": drop.localization[req.lang, "welcome", "title"]
-    ])
-}
 
 drop.get("hello") { request in
     return "Hello, world!"
