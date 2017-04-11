@@ -2,6 +2,45 @@ import Foundation
 import CoreLocation
 import Vapor
 
+enum RPPArea: String {
+    case A = "A"
+    case B
+    case C
+    case D
+    case E
+    case F
+    case G
+    case H
+    case I
+    case J
+    case K
+    case L
+    case M
+    case N
+    case O
+    case P
+    case Q
+    case R
+    case S
+    case T
+    case U
+    case V
+    case W
+    case X
+    case Y
+    case Z
+}
+
+enum Weekdays {
+    case Monday
+    case Tuesday
+    case Wednesday
+    case Thursday
+    case Friday
+    case Saturday
+    case Sunday
+}
+
 final class ParkingRule: Model {
     //var DoW: daysOfTheWeek?
     var id: Node?
