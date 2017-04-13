@@ -41,7 +41,7 @@ enum Weekdays {
     case Sunday
 }
 
-final class ParkingRule: Model {
+final class Parking: Model {
     //var DoW: daysOfTheWeek?
     var id: Node?
     var exists: Bool = false
