@@ -3,9 +3,12 @@ import VaporPostgreSQL
 import Alamofire
 import ObjectMapper
 
-let drop = Droplet(preparations: [Acronym.self, ParkingRule.self])
+let drop = Droplet(preparations: [Acronym.self, Parking.self])
 
 try drop.addProvider(VaporPostgreSQL.Provider.self)
+
+let parking = ParkingController()
+drop.resource("parking", parking)
 
 //Alamofire.request("https://data.sfgov.org/resource/2ehv-6arf.json", method: .get, parameters: [:], encoding: URLEncoding.default, headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"]).responseJSON(completionHandler: { (jsondata) in
 //    print("Anything")

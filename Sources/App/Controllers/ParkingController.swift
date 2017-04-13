@@ -29,9 +29,18 @@ final class ParkingController: ResourceRepresentable {
     return parking
   }
   
+  func delete(request: Request, parking: Parking) throws -> ResponseRepresentable {
+    try parking.delete()
+    return JSON([:])
+  }
+  
   func makeResource() -> Resource<Parking> {
     return Resource(
-      index: index
+      index: index,
+      store: create,
+      show: show,
+      modify: update,
+      destroy: delete
     )
   }
   
