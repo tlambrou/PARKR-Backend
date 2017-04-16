@@ -44,6 +44,10 @@ final class ParkingController: ResourceRepresentable {
     )
   }
   
+//  TODO: Make a get method route that takes in bounding rectangle coordinates and returns JSON data of all data that intersects with that view.
+  
+  
+  
 }
 
 extension Request {

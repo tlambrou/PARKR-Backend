@@ -78,6 +78,7 @@ final class Parking: Model {
             "hourLimit": self.hourLimit
         ])
     }
+  
 
     static func prepare(_ database: Database) throws {
         try database.create("rules", closure: { user in
@@ -89,4 +90,12 @@ final class Parking: Model {
     static func revert(_ database: Database) throws {
         try database.delete("rules")
     }
+}
+
+extension Model {
+  
+
+  
+  
+  
 }
