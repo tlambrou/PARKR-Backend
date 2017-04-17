@@ -3,6 +3,8 @@ import CoreLocation
 import Vapor
 import ObjectMapper
 
+typealias DayRange = (Weekday, Weekday)
+
 
 final class Parking: Model, Mappable {
     var id: Node?
@@ -12,9 +14,9 @@ final class Parking: Model, Mappable {
     var hoursEnd: Int!
     var hourLimit: Int!
     var originalId: Int!
-    var dayRange: (Weekday, Weekday)!
+    var dayRange: DayRange!
     var rppRegion: [RPPArea]?
-    //var geometry: [CLLocationCoordinate2D]
+    var geometry: CGRect!
     
     required public init?(map: Map) {}
     
@@ -27,6 +29,8 @@ final class Parking: Model, Mappable {
         self.originalId <- map["object_id"]
         
         self.rppRegion <- (map, RPPTransform())
+        
+       // self.geometry <- (map["geom"], GeoTransform())
         
     }
     
@@ -66,12 +70,18 @@ final class Parking: Model, Mappable {
     }
     
     init(node: Node, in context: Context) throws {
-        self.hoursBegin = try node.extract("hoursBegin")
-        self.hoursEnd = try node.extract("hoursEnd")
-        self.hourLimit = try node.extract("hourLimit")
-        self.originalId = try node.extract("originalId")
-        //self.geometry = try node.extract("geometry")
+        self.hoursBegin = try node.extract("hours_begin")
+        self.hoursEnd = try node.extract("hours_end")
+        self.hourLimit = try node.extract("hour_limit")
+        self.originalId = try node.extract("object_id")
+        
+        let geomNode: Node = try node.extract("geom")
+        
+        self.geometry = try transformGeom(node: geomNode)
+
         self.id = try node.extract("id")
+        self.rppRegion = try transformRPP(node: node)
+        self.dayRange = try transformDayRange(node: node)
     }
 
     func makeNode(context: Context) throws -> Node {
@@ -86,14 +96,74 @@ final class Parking: Model, Mappable {
   
 
     static func prepare(_ database: Database) throws {
-        try database.create("rules", closure: { user in
+        try database.create("parking", closure: { user in
             user.id()
-            //user.
+            user.int("hours_begin")
+            user.int("hours_end")
+            user.int("hour_limit")
+            user.int("original_id")
         })
     }
     
     static func revert(_ database: Database) throws {
         try database.delete("rules")
+    }
+    
+    private func transformGeom(node: Node) throws -> CGRect {
+//        let type = try node.extract("type").string
+        
+        let pointAArray: [Double] = try node.extract("coordinates").array[0]
+        let poingBArray: [Double] = try node.extract("coordinates").array[1]
+        
+        let pointA = CGPoint(x: pointAArray[0], y: pointAArray[1])
+        let pointB = CGPoint(x: poingBArray[0], y: poingBArray[1])
+        
+        return CGRect(origin: pointA, size: pointA.sizeOfBounds(point: pointB))
+    }
+    
+    private func transformRPP(node: Node) throws -> [RPPArea] {
+        
+        var rppArray = [RPPArea]()
+        
+        if let rppArea1 = ((node["rpp_area_1"]?.string != " ") ? node["rpp_area_1"]?.string : nil) {
+            rppArray.append(RPPArea(areaChar: rppArea1))
+        }
+        
+        if let rppArea2 = ((node["rpp_area_2"]?.string != " ") ? node["rpp_area_2"]?.string : nil) {
+            rppArray.append(RPPArea(areaChar: rppArea2))
+        }
+        
+        if let rppArea3 = ((node["rpp_area_3"]?.string != " ") ? node["rpp_area_3"]?.string : nil) {
+            rppArray.append(RPPArea(areaChar: rppArea3))
+        }
+        
+        return rppArray
+    }
+    
+    private func transformDayRange(node: Node) throws -> DayRange {
+        let dateString = node["days"]?.string
+        
+        let days = dateString?.components(separatedBy: "-")
+        
+        return (Weekday(dayChar: days![0]), Weekday(dayChar: days![1]))
+    }
+}
+
+
+extension CGPoint {
+    func distanceTo(point: CGPoint) -> Double {
+        let xDist = self.x - point.x
+        let yDist = self.y - point.y
+        
+        return Double(sqrt((xDist * xDist) + (yDist * yDist)))
+    }
+    
+    func sizeOfBounds(point: CGPoint) -> CGSize {
+        let xDist = self.x - point.x
+        let yDist = self.y - point.y
+        
+        
+        return CGSize(width: xDist, height: yDist)
     }
 }
 
