@@ -3,7 +3,7 @@ import VaporPostgreSQL
 import Alamofire
 import ObjectMapper
 
-let drop = Droplet(preparations: [Acronym.self, Parking.self])
+let drop = Droplet(preparations: [Parking.self])
 
 try drop.addProvider(VaporPostgreSQL.Provider.self)
 

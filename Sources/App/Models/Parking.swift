@@ -1,101 +1,103 @@
 import Foundation
 import CoreLocation
 import Vapor
+import Fluent
+//import MapKit
 
 enum RPPArea: String {
-    case A = "A"
-    case B
-    case C
-    case D
-    case E
-    case F
-    case G
-    case H
-    case I
-    case J
-    case K
-    case L
-    case M
-    case N
-    case O
-    case P
-    case Q
-    case R
-    case S
-    case T
-    case U
-    case V
-    case W
-    case X
-    case Y
-    case Z
+  case A = "A", B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
 }
 
-enum Weekdays {
-    case Monday
-    case Tuesday
-    case Wednesday
-    case Thursday
-    case Friday
-    case Saturday
-    case Sunday
+enum DOW: String {
+  case mondayToFriday = "Mon-Fri"
+  case mondayToSaturday = "Mon-Sat"
+  case mondayToSunday = "Mon-Sun"
 }
 
 final class Parking: Model {
-    //var DoW: daysOfTheWeek?
-    var id: Node?
-    var exists: Bool = false
-    
-    var hoursBegin: Int
-    var hoursEnd: Int
-    var hourLimit: Int
-    var originalId: Int
-    //var geometry: [CLLocationCoordinate2D]
-    
-    init(hoursBegin: Int, hoursEnd: Int, hourLimit: Int, originalId: Int, geometry: [CLLocationCoordinate2D]) {
-        self.hoursBegin = hoursBegin
-        self.hoursEnd = hoursEnd
-        self.hourLimit = hourLimit
-        self.originalId = originalId
-        //self.geometry = geometry
-    }
-    
-    init(node: Node, in context: Context) throws {
-        self.hoursBegin = try node.extract("hoursBegin")
-        self.hoursEnd = try node.extract("hoursEnd")
-        self.hourLimit = try node.extract("hourLimit")
-        self.originalId = try node.extract("originalId")
-        //self.geometry = try node.extract("geometry")
-        self.id = try node.extract("id")
-    }
-
-    func makeNode(context: Context) throws -> Node {
-        return try Node(node: [
-            "id": self.id,
-            "originalId": self.originalId,
-            "hoursBegin": self.hoursBegin,
-            "hoursEnd": self.hoursEnd,
-            "hourLimit": self.hourLimit
-        ])
-    }
+  var id: Node?
+  var exists: Bool = false
+  var TPHoursBegin: Int?
+  var TPHoursEnd: Int?
+  var TPHourLimit: Int?
+  var TPOriginalId: Int?
+  var TPDays: String?
+  var TPDaysOfWeek: DOW?
+  var hasTimedParking: Bool?
+//  var TPGeometry: [CLLocationCoordinate2D]?
   
-
-    static func prepare(_ database: Database) throws {
-        try database.create("rules", closure: { user in
-            user.id()
-            //user.
-        })
+  // Vars for bounding rectangle of all data in the block's geometries
+  var rectLowerLongitude: Double?
+  var rectUpperLongitude: Double?
+  var rectLowerLatitude: Double?
+  var rectUpperLatitude: Double?
+  
+  init(TPDaysOfWeek: DOW, TPHoursBegin: Int, TPHoursEnd: Int, TPHourLimit: Int, TPOriginalId: Int, TPGeometry: [CLLocationCoordinate2D]) {
+    self.id = nil
+    self.TPDays = TPDaysOfWeek.rawValue
+    self.TPHoursBegin = TPHoursBegin
+    self.TPHoursEnd = TPHoursEnd
+    self.TPHourLimit = TPHourLimit
+    self.TPOriginalId = TPOriginalId
+    if self.TPOriginalId != nil {
+      self.hasTimedParking = true
+    } else {
+      self.hasTimedParking = false
     }
+    self.exists = true
+//    self.TPGeometry = TPGeometry
     
-    static func revert(_ database: Database) throws {
-        try database.delete("rules")
-    }
+    //Update the bounding rect values for all geometries with data on the block
+//    let line = MKPolyline(coordinates: TPGeometry, count: TPGeometry.count)
+//    let rect = line.boundingMapRect
+//    self.rectLowerLongitude = MKMapRectGetMinX(rect)
+//    self.rectUpperLongitude = MKMapRectGetMaxX(rect)
+//    self.rectLowerLatitude = MKMapRectGetMaxY(rect)
+//    self.rectUpperLatitude = MKMapRectGetMinY(rect)
+  }
+  
+  init(node: Node, in context: Context) throws {
+    self.TPDays = try node.extract("TPDays")
+    self.TPHoursBegin = try node.extract("TPHoursBegin")
+    self.TPHoursEnd = try node.extract("TPHoursEnd")
+    self.TPHourLimit = try node.extract("TPHourLimit")
+    self.TPOriginalId = try node.extract("TPOriginalId")
+    self.hasTimedParking = try node.extract("hasTimedParking")
+    self.id = try node.extract("id")
+//    self.rectLowerLongitude = try node.extract("rectLowerLongitude")
+    
+  }
+  
+  func makeNode(context: Context) throws -> Node {
+    return try Node(node: [
+      "id": self.id,
+      "TPDays": self.TPDays,
+      "TPOriginalId": self.TPOriginalId,
+      "TPHoursBegin": self.TPHoursBegin,
+      "TPHoursEnd": self.TPHoursEnd,
+      "TPHourLimit": self.TPHourLimit,
+//      "rectLowerLongitude": self.rectLowerLongitude
+      ])
+  }
+  
+  
+  static func prepare(_ database: Database) throws {
+    try database.create("parking", closure: { parking in
+      parking.id()
+      parking.string("TPDaysOfWeek")
+      parking.int("TPHoursBegin")
+      parking.int("TPHoursEnd")
+      parking.int("TPHourLimit")
+      parking.int("TPOriginalId", optional: true, unique: true, default: nil)
+//      parking.double("rectLowerLongitude")
+    })
+  }
+  
+  static func revert(_ database: Database) throws {
+    try database.delete("parking")
+  }
 }
 
 extension Model {
-  
-
-  
-  
   
 }
