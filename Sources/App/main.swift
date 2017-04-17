@@ -1,14 +1,14 @@
 import Foundation
 import Vapor
 import VaporPostgreSQL
-import Alamofire
 import ObjectMapper
-import GeoSwift
-import MapKit
 
-let drop = Droplet(preparations: [Acronym.self, ParkingRule.self])
+let drop = Droplet(preparations: [Acronym.self, Parking.self])
 
 try drop.addProvider(VaporPostgreSQL.Provider.self)
+
+let parking = ParkingController()
+drop.resource("parking", parking)
 
 //Alamofire.request("https://data.sfgov.org/resource/2ehv-6arf.json", method: .get, parameters: [:], encoding: URLEncoding.default, headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"]).responseJSON(completionHandler: { (jsondata) in
 //    print("Anything")
@@ -23,12 +23,6 @@ let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json",
 let j = resp.json
 
 print((resp.json?[0])!)
-
-if let geoJSONURL = Bundle.main.url(forResource: "TimedParkingData", withExtension: "geojson"),
-    let geometries = try! Geometry.fromGeoJSON(geoJSONURL),
-    let italy = geometries[0] as? MultiPolygon {
-    
-}
 
 drop.get("hello") { request in
     

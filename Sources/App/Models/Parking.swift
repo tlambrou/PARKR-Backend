@@ -2,10 +2,9 @@ import Foundation
 import CoreLocation
 import Vapor
 import ObjectMapper
-import GeoSwift
 
-final class ParkingRule: Model, Mappable {
-    //var DoW: daysOfTheWeek?
+
+final class Parking: Model, Mappable {
     var id: Node?
     var exists: Bool = false
     
@@ -84,6 +83,7 @@ final class ParkingRule: Model, Mappable {
             "hourLimit": self.hourLimit
         ])
     }
+  
 
     static func prepare(_ database: Database) throws {
         try database.create("rules", closure: { user in
@@ -95,4 +95,12 @@ final class ParkingRule: Model, Mappable {
     static func revert(_ database: Database) throws {
         try database.delete("rules")
     }
+}
+
+extension Model {
+  
+
+  
+  
+  
 }
