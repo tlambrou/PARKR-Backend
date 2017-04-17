@@ -20,12 +20,10 @@ drop.resource("parking", parking)
 
 let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "")
 
-<<<<<<< HEAD
-=======
+
 let j = resp.json
 
 print((resp.json?[0])!)
->>>>>>> 5aad70187a2656a14855b9fb1b7201bd4f98e033
 
 drop.get("hello") { request in
     

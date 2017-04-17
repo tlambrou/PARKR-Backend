@@ -3,10 +3,10 @@ import CoreLocation
 import Vapor
 import Fluent
 //import MapKit
-
-enum RPPArea: String {
-  case A = "A", B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
-}
+//
+//enum RPPArea: String {
+//  case A = "A", B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
+//}
 
 enum DOW: String {
   case mondayToFriday = "Mon-Fri"
