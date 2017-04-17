@@ -1,7 +1,6 @@
 import Foundation
 import Vapor
 import VaporPostgreSQL
-import ObjectMapper
 
 let drop = Droplet(preparations: [Acronym.self, Parking.self])
 

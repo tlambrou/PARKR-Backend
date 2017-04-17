@@ -6,7 +6,7 @@ import ObjectMapper
 typealias DayRange = (Weekday, Weekday)
 
 
-final class Parking: Model, Mappable {
+final class Parking: Model {
     var id: Node?
     var exists: Bool = false
     
@@ -18,55 +18,14 @@ final class Parking: Model, Mappable {
     var rppRegion: [RPPArea]?
     var geometry: CGRect!
     
-    required public init?(map: Map) {}
-    
-    public func mapping(map: Map) {
-        self.dayRange <- (map["days"], WeekdayRangeTransform())
-        
-        self.hourLimit <- map["hour_limit"]
-        self.hoursBegin <- map["hours_begin"]
-        self.hoursEnd <- map["hours_end"]
-        self.originalId <- map["object_id"]
-        
-        self.rppRegion <- (map, RPPTransform())
-        
-       // self.geometry <- (map["geom"], GeoTransform())
-        
-    }
-    
-//    {
-//        "days": "M-F",
-//        "geom": {
-//            "type": "LineString",
-//            "coordinates": [
-//                [
-//                    -122.46135273132373,
-//                    37.78675307823066
-//                ],
-//                [
-//                    -122.46054784629841,
-//                    37.786789477745
-//                ]
-//            ]
-//        },
-//        "hour_limit": "2",
-//        "hours": "900-1800",
-//        "hours_begin": "900",
-//        "hours_end": "1800",
-//        "last_edited_date": "2016-10-21T00:00:00.000Z",
-//        "object_id": "1",
-//        "regulation": "RPP",
-//        "rpp_area_1": "N",
-//        "rpp_area_2": " ",
-//        "rpp_area_3": " "
-//    }
-//    
-    init(hoursBegin: Int, hoursEnd: Int, hourLimit: Int, originalId: Int, geometry: [CLLocationCoordinate2D]) {
+    init(hoursBegin: Int, hoursEnd: Int, hourLimit: Int, originalId: Int, dayRange: DayRange, rppRegion: [RPPArea], geometry: CGRect) {
         self.hoursBegin = hoursBegin
         self.hoursEnd = hoursEnd
         self.hourLimit = hourLimit
         self.originalId = originalId
-        //self.geometry = geometry
+        self.dayRange = dayRange
+        self.rppRegion = rppRegion
+        self.geometry = geometry
     }
     
     init(node: Node, in context: Context) throws {
@@ -165,12 +124,4 @@ extension CGPoint {
         
         return CGSize(width: xDist, height: yDist)
     }
-}
-
-extension Model {
-  
-
-  
-  
-  
 }
