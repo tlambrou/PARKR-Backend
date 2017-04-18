@@ -9,10 +9,11 @@ try drop.addProvider(VaporPostgreSQL.Provider.self)
 let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "")
 
 let j = resp.json
+print(resp.json?[0])
 var park = try Parking(node:(resp.json?[0])!, in: ["from" : "JSON"])
 
-try park.makeNode(context: ["":""])
-
+print(try park.makeNode(context: ["":""]))
+print()
 print(try Parking.all().makeNode(context: ["to":"JSON"]))
 
 drop.get("hello") { request in

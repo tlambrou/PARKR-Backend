@@ -1,8 +1,6 @@
 import Foundation
-//import CoreLocation
 import Vapor
-
-import ObjectMapper
+import PostgreSQL
 
 typealias DayRange = (Weekday, Weekday)
 
@@ -41,6 +39,26 @@ final class Parking: Model {
             self.originalId = try node.extract("object_id")
             
             let geomNode: Node = try node.extract("geom")
+            print(geomNode)
+            
+            self.ruleLine = [CGPoint]()
+            
+            for item in (geomNode["coordinates"]?.array!)! {
+                ruleLine.append(CGPoint(x: (item.array?[0].double)!, y: (item.array?[1].double)!))
+            }
+            
+            self.boundingBox = try transformGeom(node: geomNode)
+            
+            self.id = try node.extract("id")
+            self.rppRegion = try transformRPP(node: node)
+            self.dayRange = try transformDayRange(node: node)
+        }else{
+            self.hoursBegin = try node.extract("hours_begin")
+            self.hoursEnd = try node.extract("hours_end")
+            self.hourLimit = try node.extract("hour_limit")
+            self.originalId = try node.extract("object_id")
+            
+            let geomNode: Node = try node.extract("geom")
             
             self.boundingBox = try transformGeom(node: geomNode)
             
@@ -58,12 +76,13 @@ final class Parking: Model {
             "hour_limit": self.hourLimit,
             "object_id": self.originalId,
             "day_range": self.dayRange.0.dayChar + "-" + self.dayRange.1.dayChar,
-            "rpp_region": self.rppRegion!.map{ $0.areaChar },
+            "rpp_region": Node.array(self.rppRegion!.map{Node.string($0.areaChar)}),
+            "bounding_box": PostgreSQL.OID.box
         ])
     }
   
 
-    static func prepare(_ database: Database) throws {
+    static func prepare(_ database: Vapor.Database) throws {
         try database.create("parking", closure: { user in
             user.id()
             user.int("hours_begin")
@@ -77,7 +96,7 @@ final class Parking: Model {
         })
     }
     
-    static func revert(_ database: Database) throws {
+    static func revert(_ database: Vapor.Database) throws {
         try database.delete("parking")
     }
     
