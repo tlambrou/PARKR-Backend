@@ -1,5 +1,5 @@
 import Foundation
-import CoreLocation
+//import CoreLocation
 import Vapor
 import Fluent
 //import MapKit
@@ -32,7 +32,7 @@ final class Parking: Model {
   var rectLowerLatitude: Double?
   var rectUpperLatitude: Double?
   
-  init(TPDaysOfWeek: DOW, TPHoursBegin: Int, TPHoursEnd: Int, TPHourLimit: Int, TPOriginalId: Int, TPGeometry: [CLLocationCoordinate2D]) {
+  init(TPDaysOfWeek: DOW, TPHoursBegin: Int, TPHoursEnd: Int, TPHourLimit: Int, TPOriginalId: Int/*, TPGeometry: [CLLocationCoordinate2D]*/) {
     self.id = nil
     self.TPDays = TPDaysOfWeek.rawValue
     self.TPHoursBegin = TPHoursBegin
