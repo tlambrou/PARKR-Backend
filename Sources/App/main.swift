@@ -2,7 +2,7 @@ import Foundation
 import Vapor
 import VaporPostgreSQL
 
-let drop = Droplet(preparations: [Acronym.self, Parking.self])
+let drop = Droplet(preparations: [Parking.self])
 
 try drop.addProvider(VaporPostgreSQL.Provider.self)
 

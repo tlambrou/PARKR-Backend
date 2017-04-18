@@ -2,12 +2,6 @@
   "autoPin": true,
   "pins": [
     {
-      "package": "Alamofire",
-      "reason": null,
-      "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
-      "version": "4.4.0"
-    },
-    {
       "package": "CLibreSSL",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/clibressl.git",
@@ -86,12 +80,6 @@
       "version": "1.0.1"
     },
     {
-      "package": "ObjectMapper",
-      "reason": null,
-      "repositoryURL": "https://github.com/Hearst-DD/ObjectMapper.git",
-      "version": "2.2.5"
-    },
-    {
       "package": "PathIndexable",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/path-indexable.git",
@@ -110,6 +98,12 @@
       "version": "1.1.0"
     },
     {
+      "package": "Punctual",
+      "reason": null,
+      "repositoryURL": "https://github.com/harlanhaskins/Punctual.swift",
+      "version": "1.0.1"
+    },
+    {
       "package": "Routing",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/routing.git",
@@ -120,6 +114,12 @@
       "reason": null,
       "repositoryURL": "https://github.com/vapor/socks.git",
       "version": "1.2.7"
+    },
+    {
+      "package": "SwiftyJSON",
+      "reason": null,
+      "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON",
+      "version": "3.1.4"
     },
     {
       "package": "TLS",

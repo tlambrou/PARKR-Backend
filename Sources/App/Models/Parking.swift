@@ -1,6 +1,7 @@
 import Foundation
-import CoreLocation
+//import CoreLocation
 import Vapor
+
 import ObjectMapper
 
 typealias DayRange = (Weekday, Weekday)
@@ -30,6 +31,7 @@ final class Parking: Model {
         
         self.boundingBox = transformGeom(ruleLine: self.ruleLine)
     }
+
     
     init(node: Node, in context: Context) throws {
         if let context = context as? Dictionary<String, String>, let from = context["from"], from == "JSON" {
@@ -49,7 +51,6 @@ final class Parking: Model {
     }
 
     func makeNode(context: Context) throws -> Node {
-        NodeRepresentable
         return try Node(node: [
             "id": self.id,
             "hours_begin": self.hoursBegin,
