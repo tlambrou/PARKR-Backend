@@ -1,7 +1,6 @@
+import Foundation
 import Vapor
 import VaporPostgreSQL
-import Alamofire
-import ObjectMapper
 
 let drop = Droplet(preparations: [Parking.self])
 
@@ -10,16 +9,14 @@ try drop.addProvider(VaporPostgreSQL.Provider.self)
 let parking = ParkingController()
 drop.resource("parking", parking)
 
-//Alamofire.request("https://data.sfgov.org/resource/2ehv-6arf.json", method: .get, parameters: [:], encoding: URLEncoding.default, headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"]).responseJSON(completionHandler: { (jsondata) in
-//    print("Anything")
-//    
-//    let json = JSON(jsondata.result.value as! Node)
-//    
-//    print(json)
-//})
-
 let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "")
 
+let j = resp.json
+let park = try Parking(node:(resp.json?[0])!)
+
+print(j?[0])
+
+print(park.dayRange)
 
 let j = resp.json
 
@@ -48,9 +45,22 @@ drop.get("model") { request in
 }
 
 drop.get("test") { request in
+//    let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "")
+//    
+//    let j = resp.json
+//    
+//    
+//    for park in (resp.json?.array)! {
+//        let newParking = try Parking(node:(resp.json?[0])!)
+//        
+//    }
+   
+    
+
+    
     var acronym = Acronym(short: "AFK", long: "Away From Keyboard")
     try acronym.save()
-    return try JSON(node: Acronym.all().makeNode())
+    return try JSON(node: Acronym.query().all().makeNode())
 }
 
 drop.resource("posts", PostController())

@@ -1,6 +1,9 @@
 import Vapor
 import HTTP
 import VaporPostgreSQL
+import CoreData
+import SwiftyJSON
+
 
 final class ParkingController: ResourceRepresentable {
   
@@ -33,6 +36,20 @@ final class ParkingController: ResourceRepresentable {
   func delete(request: Request, parking: Parking) throws -> ResponseRepresentable {
     try parking.delete()
     return JSON([:])
+  }
+  
+  func dataImport(request: Request, parking: Parking) throws -> ResponseRepresentable {
+    let file = "/Data/SampleTimedParking.json"
+    let fileComponents = file.components(separatedBy: ".")
+    let path = Bundle.main.path(forResource: fileComponents[0], ofType: fileComponents[1])
+    let text = try! String(contentsOfFile: path!) // read as string
+    let json = try! JSONSerialization.jsonObject(with: text.data(using: .utf8)!, options: []) as? [String: Any]
+    let json2 = JSON(json!)
+    let allData = json2["features"].arrayValue
+    let allTimedParkingData = try allData.map({ (entry) -> Context in
+      return try parking.makeNode(context: entry as! Context)
+    })
+    return allTimedParkingData as! ResponseRepresentable
   }
   
   func makeResource() -> Resource<Parking> {
