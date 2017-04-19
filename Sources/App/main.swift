@@ -1,6 +1,8 @@
 import Foundation
 import Vapor
 import VaporPostgreSQL
+import FluentPostgreSQL
+import HTTP
 
 let drop = Droplet(preparations: [Parking.self])
 
@@ -17,6 +19,10 @@ print(try park.makeNode(context: ["":""]))
 print()
 print(try Parking.all().makeNode(context: ["to":"JSON"]))
 
+//drop.get("test") { request in
+//    let park = try Parking.find(1)
+//  return try park!.makeJSON()
+//}
 
 drop.get("hello") { request in
 
@@ -38,7 +44,7 @@ drop.get("model") { request in
     return try acronym.makeJSON()
 }
 
-drop.get("test") { request in
+drop.get("testAcronym") { request in
 //    let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "")
 //    
 //    let j = resp.json
@@ -48,10 +54,7 @@ drop.get("test") { request in
 //        let newParking = try Parking(node:(resp.json?[0])!)
 //        
 //    }
-   
-    
-
-    
+  
     var acronym = Acronym(short: "AFK", long: "Away From Keyboard")
     try acronym.save()
     return try JSON(node: Acronym.query().all().makeNode())

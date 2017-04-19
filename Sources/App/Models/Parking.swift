@@ -77,25 +77,26 @@ final class Parking: Model {
             "object_id": self.originalId,
             "day_range": self.dayRange.0.dayChar + "-" + self.dayRange.1.dayChar,
             "rpp_region": Node.array(self.rppRegion!.map{Node.string($0.areaChar)}),
-//            "bounding_box": PostgreSQL.OID.unknown
+//            "bounding_box": "[[\(self.boundingBox.minX), \(self.boundingBox.minY)], [\(self.boundingBox.maxX), \(self.boundingBox.maxY)]]"
         ])
     }
   
 
     static func prepare(_ database: Vapor.Database) throws {
-        try database.create("parking", closure: { user in
-            user.id()
-            user.int("hours_begin")
-            user.int("hours_end")
-            user.int("hour_limit")
-            user.int("original_id")
-            user.string("day_range")
-            user.custom("rpp_region", type: "VARCHAR(255)[]")
-            user.custom("bounding_box", type: "box")
-            user.custom("rule_line", type: "line")
+        try database.create("parking", closure: { parking in
+            parking.id()
+            parking.int("hours_begin")
+            parking.int("hours_end")
+            parking.int("hour_limit")
+            parking.int("original_id")
+            parking.string("day_range")
+            parking.custom("rpp_region", type: "VARCHAR(255)[]")
+            parking.custom("rule_line", type: "line")
         })
     }
-    
+//  user.custom("bounding_box", type: "VARCHAR(255)[]")
+
+  
     static func revert(_ database: Vapor.Database) throws {
         try database.delete("parking")
     }
