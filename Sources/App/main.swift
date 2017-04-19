@@ -6,24 +6,20 @@ let drop = Droplet(preparations: [Parking.self])
 
 try drop.addProvider(VaporPostgreSQL.Provider.self)
 
-let parking = ParkingController()
-drop.resource("parking", parking)
-
 let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "")
 
 let j = resp.json
-let park = try Parking(node:(resp.json?[0])!)
 
-print(j?[0])
+print(resp.json?[0])
+var park = try Parking(node:(resp.json?[0])!, in: ["from" : "JSON"])
 
-print(park.dayRange)
+print(try park.makeNode(context: ["":""]))
+print()
+print(try Parking.all().makeNode(context: ["to":"JSON"]))
 
-print((resp.json?[0])!)
 
 drop.get("hello") { request in
-    
-    
-    
+
     return "Hello, world!"
 }
 
@@ -62,5 +58,6 @@ drop.get("test") { request in
 }
 
 drop.resource("posts", PostController())
+drop.resource("parking", ParkingController())
 
 drop.run()

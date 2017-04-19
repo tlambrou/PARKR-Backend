@@ -2,12 +2,6 @@
   "autoPin": true,
   "pins": [
     {
-      "package": "Alamofire",
-      "reason": null,
-      "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
-      "version": "4.4.0"
-    },
-    {
       "package": "CLibreSSL",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/clibressl.git",
@@ -29,7 +23,7 @@
       "package": "Core",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/core.git",
-      "version": "1.1.1"
+      "version": "1.1.2"
     },
     {
       "package": "Crypto",
@@ -54,12 +48,6 @@
       "reason": null,
       "repositoryURL": "https://github.com/vapor/postgresql-driver.git",
       "version": "1.1.0"
-    },
-    {
-      "package": "GeoSwift",
-      "reason": null,
-      "repositoryURL": "https://github.com/petrpavlik/GeoSwift.git",
-      "version": "1.0.2"
     },
     {
       "package": "JSON",
@@ -90,12 +78,6 @@
       "reason": null,
       "repositoryURL": "https://github.com/vapor/node.git",
       "version": "1.0.1"
-    },
-    {
-      "package": "ObjectMapper",
-      "reason": null,
-      "repositoryURL": "https://github.com/Hearst-DD/ObjectMapper.git",
-      "version": "2.2.5"
     },
     {
       "package": "PathIndexable",
@@ -134,12 +116,6 @@
       "version": "1.2.7"
     },
     {
-      "package": "SwiftyJSON",
-      "reason": null,
-      "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON",
-      "version": "3.1.4"
-    },
-    {
       "package": "TLS",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/tls.git",
@@ -155,7 +131,7 @@
       "package": "Vapor",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/vapor.git",
-      "version": "1.5.14"
+      "version": "1.5.15"
     },
     {
       "package": "VaporPostgreSQL",
