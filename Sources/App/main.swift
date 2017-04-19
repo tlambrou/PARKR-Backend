@@ -10,7 +10,7 @@ let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json",
 
 let j = resp.json
 
-print(resp.json?[0])
+print(resp.json?[0]! as Any)
 var park = try Parking(node:(resp.json?[0])!, in: ["from" : "JSON"])
 
 print(try park.makeNode(context: ["":""]))

@@ -77,7 +77,7 @@ final class Parking: Model {
             "object_id": self.originalId,
             "day_range": self.dayRange.0.dayChar + "-" + self.dayRange.1.dayChar,
             "rpp_region": Node.array(self.rppRegion!.map{Node.string($0.areaChar)}),
-            "bounding_box": PostgreSQL.OID.box
+//            "bounding_box": PostgreSQL.OID.unknown
         ])
     }
   

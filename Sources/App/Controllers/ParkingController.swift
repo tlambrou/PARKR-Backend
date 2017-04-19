@@ -22,22 +22,12 @@ final class ParkingController: ResourceRepresentable {
   
   func update(request: Request, parking: Parking) throws -> ResponseRepresentable {
     let new = try request.parking()
-<<<<<<< HEAD
-    var parking = parking
-//    parking.TPDaysOfWeek = new.TPDaysOfWeek
-//    parking.TPHourLimit = new.TPHourLimit
-//    parking.TPHoursBegin = new.TPHoursBegin
-//    parking.TPHoursEnd = new.TPHoursEnd
-//    parking.TPOriginalId = new.TPOriginalId
-=======
     let parking = parking
     
     parking.dayRange = new.dayRange
     parking.hourLimit = new.hourLimit
     parking.hoursBegin = new.hoursBegin
     parking.hoursEnd = new.hoursEnd
->>>>>>> 44a1192bf28eed4887bf99a9511a7f964b41debd
-    
     return parking
   }
   
