@@ -2,7 +2,6 @@ import Vapor
 import HTTP
 import VaporPostgreSQL
 import CoreData
-import SwiftyJSON
 
 
 final class ParkingController: ResourceRepresentable {
@@ -23,13 +22,12 @@ final class ParkingController: ResourceRepresentable {
   
   func update(request: Request, parking: Parking) throws -> ResponseRepresentable {
     let new = try request.parking()
-    var parking = parking
-    parking.TPDaysOfWeek = new.TPDaysOfWeek
-    parking.TPHourLimit = new.TPHourLimit
-    parking.TPHoursBegin = new.TPHoursBegin
-    parking.TPHoursEnd = new.TPHoursEnd
-    parking.TPOriginalId = new.TPOriginalId
+    let parking = parking
     
+    parking.dayRange = new.dayRange
+    parking.hourLimit = new.hourLimit
+    parking.hoursBegin = new.hoursBegin
+    parking.hoursEnd = new.hoursEnd
     return parking
   }
   
@@ -43,9 +41,13 @@ final class ParkingController: ResourceRepresentable {
     let fileComponents = file.components(separatedBy: ".")
     let path = Bundle.main.path(forResource: fileComponents[0], ofType: fileComponents[1])
     let text = try! String(contentsOfFile: path!) // read as string
-    let json = try! JSONSerialization.jsonObject(with: text.data(using: .utf8)!, options: []) as? [String: Any]
-    let json2 = JSON(json!)
-    let allData = json2["features"].arrayValue
+    
+    guard let json = try! JSONSerialization.jsonObject(with: text.data(using: .utf8)!, options: []) as? [String: Any] else {
+        throw JSONError.self as! Error
+    }
+   
+    let allData = json["features"]
+   
     let allTimedParkingData = try allData.map({ (entry) -> Context in
       return try parking.makeNode(context: entry as! Context)
     })
