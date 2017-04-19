@@ -18,8 +18,6 @@ print(j?[0])
 
 print(park.dayRange)
 
-let j = resp.json
-
 print((resp.json?[0])!)
 
 drop.get("hello") { request in
