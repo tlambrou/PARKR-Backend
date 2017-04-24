@@ -33,13 +33,13 @@ final class Parking: Model {
     
     init(node: Node, in context: Context) throws {
         if let context = context as? Dictionary<String, String>, let from = context["from"], from == "JSON" {
+            self.id = try node.extract("id")
             self.hoursBegin = try node.extract("hours_begin")
             self.hoursEnd = try node.extract("hours_end")
             self.hourLimit = try node.extract("hour_limit")
             self.originalId = try node.extract("object_id")
             
             let geomNode: Node = try node.extract("geom")
-            print(geomNode)
             
             self.ruleLine = [CGPoint]()
             
@@ -49,50 +49,68 @@ final class Parking: Model {
             
             self.boundingBox = try transformGeom(node: geomNode)
             
-            self.id = try node.extract("id")
             self.rppRegion = try transformRPP(node: node)
             self.dayRange = try transformDayRange(node: node)
         }else{
+            self.id = try node.extract("id")
             self.hoursBegin = try node.extract("hours_begin")
             self.hoursEnd = try node.extract("hours_end")
             self.hourLimit = try node.extract("hour_limit")
             self.originalId = try node.extract("object_id")
             
-            let geomNode: Node = try node.extract("geom")
+            guard let x1: Double = try node.extract("bounding_x1") else {return}
+            guard let y1: Double = try node.extract("bouding_y1") else {return}
+            guard let x2: Double = try node.extract("bounding_x2") else {return}
+            guard let y2: Double = try node.extract("bounding_y2") else {return}
             
-            self.boundingBox = try transformGeom(node: geomNode)
+            let (pointA, pointB) = (CGPoint(x: x1, y: y1), CGPoint(x: x2, y: y2))
             
-            self.id = try node.extract("id")
-            self.rppRegion = try transformRPP(node: node)
+            self.boundingBox = CGRect(origin: pointA, size: pointA.sizeOfBounds(point: pointB))
+            
+            let rppChars: [String] = (try node.extract("rpp_region").string).components(separatedBy: ",")
+            
+            
+            self.rppRegion = rppChars.map{RPPArea(areaChar: $0)}
             self.dayRange = try transformDayRange(node: node)
         }
     }
 
     func makeNode(context: Context) throws -> Node {
+        let rppChars = self.rppRegion!.map{$0.areaChar}
+        
+        let ruleLineString = self.ruleLine.map{[$0.x.native, $0.y.native]}
+      
         return try Node(node: [
             "id": self.id,
             "hours_begin": self.hoursBegin,
             "hours_end": self.hoursEnd,
             "hour_limit": self.hourLimit,
-            "object_id": self.originalId,
+            "original_id": self.originalId,
             "day_range": self.dayRange.0.dayChar + "-" + self.dayRange.1.dayChar,
-            "rpp_region": Node.array(self.rppRegion!.map{Node.string($0.areaChar)}),
-            "bounding_box": PostgreSQL.OID.box
+            "rpp_region": rppChars.joined(separator: ","),
+            "bounding_x1": boundingBox.minX.native,
+            "bounding_y1": boundingBox.minY.native,
+            "bounding_x2": boundingBox.maxX.native,
+            "bounding_y2": boundingBox.maxY.native,
+            "rule_line": ruleLineString.map{$0.map{String($0)}.joined(separator: ",")}.joined(separator: "/") //lol k
         ])
     }
   
 
     static func prepare(_ database: Vapor.Database) throws {
-        try database.create("parking", closure: { user in
+        try database.create("parkings", closure: { user in
             user.id()
             user.int("hours_begin")
             user.int("hours_end")
             user.int("hour_limit")
             user.int("original_id")
             user.string("day_range")
-            user.custom("rpp_region", type: "VARCHAR(255)[]")
-            user.custom("bounding_box", type: "box")
-            user.custom("rule_line", type: "line")
+            user.string("rpp_region") // I'm so sorry about this
+            user.double("bounding_x1")
+            user.double("bounding_y1")
+            user.double("bounding_x2")
+            user.double("bounding_y2")
+            user.string("rule_line") // and this. Both need to be changed when Vapor supports geometric data types and arrays
         })
     }
     
