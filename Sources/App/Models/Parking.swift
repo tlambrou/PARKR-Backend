@@ -87,6 +87,7 @@ final class Parking: Model {
             "hour_limit": self.hourLimit,
             "original_id": self.originalId,
             "day_range": self.dayRange.0.dayChar + "-" + self.dayRange.1.dayChar,
+
             "rpp_region": rppChars.joined(separator: ","),
             "bounding_x1": boundingBox.minX.native,
             "bounding_y1": boundingBox.minY.native,
