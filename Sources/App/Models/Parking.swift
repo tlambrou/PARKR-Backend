@@ -59,7 +59,7 @@ final class Parking: Model {
             self.originalId = try node.extract("object_id")
             
             guard let x1: Double = try node.extract("bounding_x1") else {return}
-            guard let y1: Double = try node.extract("bouding_y1") else {return}
+            guard let y1: Double = try node.extract("bounding_y1") else {return}
             guard let x2: Double = try node.extract("bounding_x2") else {return}
             guard let y2: Double = try node.extract("bounding_y2") else {return}
             
@@ -67,11 +67,19 @@ final class Parking: Model {
             
             self.boundingBox = CGRect(origin: pointA, size: pointA.sizeOfBounds(point: pointB))
             
-            let rppChars: [String] = (try node.extract("rpp_region").string).components(separatedBy: ",")
+            let rppString: String = try node.extract("rpp_region")
+            
+            let rppChars: [String] = (rppString).components(separatedBy: ",")
             
             
             self.rppRegion = rppChars.map{RPPArea(areaChar: $0)}
-            self.dayRange = try transformDayRange(node: node)
+            
+            let dayRangeString: String = try node.extract("day_range")
+            let dayRangeChars = dayRangeString.components(separatedBy: "-")
+            self.dayRange = (Weekday(dayChar: dayRangeChars[0]), Weekday(dayChar: dayRangeChars[1]))
+            
+            let ruleLineString: String = try node.extract("rule_line")
+            self.ruleLine = ruleLineString.components(separatedBy: "/").map{CGPoint(x: Double($0.components(separatedBy: ",")[0])!, y: Double($0.components(separatedBy: ",")[1])!)}
         }
     }
 
@@ -79,22 +87,39 @@ final class Parking: Model {
         let rppChars = self.rppRegion!.map{$0.areaChar}
         
         let ruleLineString = self.ruleLine.map{[$0.x.native, $0.y.native]}
-      
-        return try Node(node: [
-            "id": self.id,
-            "hours_begin": self.hoursBegin,
-            "hours_end": self.hoursEnd,
-            "hour_limit": self.hourLimit,
-            "original_id": self.originalId,
-            "day_range": self.dayRange.0.dayChar + "-" + self.dayRange.1.dayChar,
+        
+        let rppString = rppChars.joined(separator: ",")
+        
+        if type(of: context) == JSONContext.self {
+            
+            
+            return try Node(node: [
+                "id": self.id,
+                "hours_begin": self.hoursBegin,
+                "hours_end": self.hoursEnd,
+                "hour_limit": self.hourLimit,
+                "original_id": self.originalId,
+                "day_range": ,
 
-            "rpp_region": rppChars.joined(separator: ","),
-            "bounding_x1": boundingBox.minX.native,
-            "bounding_y1": boundingBox.minY.native,
-            "bounding_x2": boundingBox.maxX.native,
-            "bounding_y2": boundingBox.maxY.native,
-            "rule_line": ruleLineString.map{$0.map{String($0)}.joined(separator: ",")}.joined(separator: "/") //lol k
-        ])
+                "rule_line": ruleLineString.map{$0.map{String($0)}.joined(separator: ",")}.joined(separator: "/") //lol k
+            ])
+        }else{
+            return try Node(node: [
+                "id": self.id,
+                "hours_begin": self.hoursBegin,
+                "hours_end": self.hoursEnd,
+                "hour_limit": self.hourLimit,
+                "original_id": self.originalId,
+                "day_range": self.dayRange.0.dayChar + "-" + self.dayRange.1.dayChar,
+                
+                "rpp_region": rppChars.joined(separator: ","),
+                "bounding_x1": boundingBox.minX.native,
+                "bounding_y1": boundingBox.minY.native,
+                "bounding_x2": boundingBox.maxX.native,
+                "bounding_y2": boundingBox.maxY.native,
+                "rule_line": ruleLineString.map{$0.map{String($0)}.joined(separator: ",")}.joined(separator: "/") //lol k
+            ])
+        }
     }
   
 

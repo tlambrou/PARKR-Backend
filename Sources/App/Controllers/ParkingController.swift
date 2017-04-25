@@ -22,8 +22,6 @@ final class ParkingController: ResourceRepresentable {
         
         let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "")
         
-        let j = resp.json
-        
         var park = try Parking(node:(resp.json?[0])!, in: ["from" : "JSON"])
         
         do {
@@ -33,13 +31,8 @@ final class ParkingController: ResourceRepresentable {
             print(error)
         }
         
-        print(try park.makeNode(context: ["":""]))
-        print()
-        let parkings = try Parking.all()
-        print()
         
-        
-        return "Hello, world!"
+        return try Parking.all().makeJSON()
     }
     
     
