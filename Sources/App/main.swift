@@ -13,9 +13,6 @@ drop.group("v1") { v1 in
         var parkingController = ParkingController()
         
         parking.get("subset", handler: parkingController.parkingSubset)
-            
-//        parking.get("park", handler: parkingController.park)
-
     }
 }
 

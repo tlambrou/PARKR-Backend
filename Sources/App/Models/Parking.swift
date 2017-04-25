@@ -88,20 +88,18 @@ final class Parking: Model {
         
         let ruleLineString = self.ruleLine.map{[$0.x.native, $0.y.native]}
         
-        let rppString = rppChars.joined(separator: ",")
-        
         if type(of: context) == JSONContext.self {
-            
+            let dayRangeList = [self.dayRange.0.dayChar, self.dayRange.1.dayChar]
+           
+            let pointArray = try self.ruleLine.map{try [$0.x.native, $0.y.native].makeNode()}
+            let pointArrayNode = try pointArray.makeNode()
             
             return try Node(node: [
-                "id": self.id,
                 "hours_begin": self.hoursBegin,
                 "hours_end": self.hoursEnd,
                 "hour_limit": self.hourLimit,
-                "original_id": self.originalId,
-                "day_range": ,
-
-                "rule_line": ruleLineString.map{$0.map{String($0)}.joined(separator: ",")}.joined(separator: "/") //lol k
+                "day_range": dayRangeList.makeNode(),
+                "rule_line": pointArrayNode
             ])
         }else{
             return try Node(node: [
@@ -157,7 +155,14 @@ final class Parking: Model {
             
             return CGRect(origin: pointA, size: pointA.sizeOfBounds(point: pointB))
         default:
-            return CGRect(x: 0, y: 0, width: 100, height: 100)
+            let points: [[Double]] = try node.extract("coordinates").array
+            let xs: [Double] = points.map{$0[0]}
+            let ys: [Double] = points.map{$0[1]}
+            
+            let pointA = CGPoint(x: xs.max()!, y: ys.max()!)
+            let pointB = CGPoint(x: xs.min()!, y: ys.min()!)
+            
+            return CGRect(origin: pointA, size: pointA.sizeOfBounds(point: pointB))
         }
     }
     

@@ -9,7 +9,7 @@ final class ParkingController: ResourceRepresentable {
     func parkingSubset(request: Request) throws -> ResponseRepresentable {
         /*
          API call for getting all blocks intersecting with the view's bounding rectangle.
-         http://parkr-api.herokuapp.com/parking/subset?ULat= 37.766952&ULong=-122.412581&LLat=37.765095&LLong=-122.413949
+         http://parkr-api.herokuapp.com/parking/subset?ULat=37.766952&ULong=-122.412581&LLat=37.765095&LLong=-122.413949
          
          Base URL: http://parkr-api.herokuapp.com/parking/subset
          
@@ -20,6 +20,22 @@ final class ParkingController: ResourceRepresentable {
          LLong: Represents lower right longitude coordinate of current bounding box
          */
         
+        let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "")
+        
+        var park = try Parking(node:(resp.json?[0])!, in: ["from" : "JSON"])
+        
+        do {
+            try park.save()
+        } catch {
+            print(error.localizedDescription)
+            print(error)
+        }
+        
+        
+        return try Parking.all().makeJSON()
+    }
+    
+    func test(request: Request) throws -> ResponseRepresentable {
         let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "")
         
         var park = try Parking(node:(resp.json?[0])!, in: ["from" : "JSON"])
@@ -96,9 +112,6 @@ final class ParkingController: ResourceRepresentable {
     }
     
     //  TODO: Make a get method route that takes in bounding rectangle coordinates and returns JSON data of all data that intersects with that view.
-    
-    
-    
 }
 
 extension Request {
