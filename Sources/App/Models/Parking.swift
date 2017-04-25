@@ -11,14 +11,14 @@ final class Parking: Model {
     
     var hoursBegin: Int!
     var hoursEnd: Int!
-    var hourLimit: Int!
+    var hourLimit: Double!
     var originalId: Int!
     var dayRange: DayRange!
     var rppRegion: [RPPArea]?
     var ruleLine: [CGPoint]!
     var boundingBox: CGRect!
     
-    init(hoursBegin: Int, hoursEnd: Int, hourLimit: Int, originalId: Int, dayRange: DayRange, rppRegion: [RPPArea], ruleLine: [CGPoint]) {
+    init(hoursBegin: Int, hoursEnd: Int, hourLimit: Double, originalId: Int, dayRange: DayRange, rppRegion: [RPPArea], ruleLine: [CGPoint]) {
         self.hoursBegin = hoursBegin
         self.hoursEnd = hoursEnd
         self.hourLimit = hourLimit
@@ -33,24 +33,29 @@ final class Parking: Model {
     
     init(node: Node, in context: Context) throws {
         if let context = context as? Dictionary<String, String>, let from = context["from"], from == "JSON" {
-            self.id = try node.extract("id")
-            self.hoursBegin = try node.extract("hours_begin")
-            self.hoursEnd = try node.extract("hours_end")
-            self.hourLimit = try node.extract("hour_limit")
-            self.originalId = try node.extract("object_id")
-            
-            let geomNode: Node = try node.extract("geom")
-            
-            self.ruleLine = [CGPoint]()
-            
-            for item in (geomNode["coordinates"]?.array!)! {
-                ruleLine.append(CGPoint(x: (item.array?[0].double)!, y: (item.array?[1].double)!))
+            let regulationType: String? = try node.extract("regulation")
+            if regulationType == "RPP" {
+                self.id = try node.extract("id")
+                self.hoursBegin = try node.extract("hours_begin")
+                self.hoursEnd = try node.extract("hours_end")
+                self.hourLimit = try node.extract("hour_limit")
+                self.originalId = try node.extract("object_id")
+                
+                let geomNode: Node = try node.extract("geom")
+                
+                self.ruleLine = [CGPoint]()
+                
+                for item in (geomNode["coordinates"]?.array!)! {
+                    ruleLine.append(CGPoint(x: (item.array?[0].double)!, y: (item.array?[1].double)!))
+                }
+                
+                self.boundingBox = try transformGeom(node: geomNode)
+                
+                self.rppRegion = try transformRPP(node: node)
+                self.dayRange = try transformDayRange(node: node)
+            }else{
+                throw RuleIngestionError.notRPP
             }
-            
-            self.boundingBox = try transformGeom(node: geomNode)
-            
-            self.rppRegion = try transformRPP(node: node)
-            self.dayRange = try transformDayRange(node: node)
         }else{
             self.id = try node.extract("id")
             self.hoursBegin = try node.extract("hours_begin")
@@ -126,7 +131,7 @@ final class Parking: Model {
             user.id()
             user.int("hours_begin")
             user.int("hours_end")
-            user.int("hour_limit")
+            user.double("hour_limit")
             user.int("original_id")
             user.string("day_range")
             user.string("rpp_region") // I'm so sorry about this
@@ -134,7 +139,7 @@ final class Parking: Model {
             user.double("bounding_y1")
             user.double("bounding_x2")
             user.double("bounding_y2")
-            user.string("rule_line") // and this. Both need to be changed when Vapor supports geometric data types and arrays
+            user.custom("rule_line", type: "TEXT")
         })
     }
     

@@ -38,7 +38,6 @@ final class ParkingController {
         
         if let mysql = drop.database?.driver as? PostgreSQLDriver {
             let parkings = try mysql.raw("SELECT * FROM parkings WHERE (bounding_x1 BETWEEN \(ulatleft) AND \(llatright)) AND (bounding_y1 BETWEEN \(ulongleft) AND \(llongright))").nodeArray
-        }
         
 //        select *
 //        from parkings
@@ -57,6 +56,25 @@ final class ParkingController {
 //        calc_bounding_x4 > ulat and calc_bounding_x4 < llat AND calc_bounding_y4 > ulong and calc_bounding_y4 < llong
         
         return parkings as! ResponseRepresentable
+    }
+    
+    func ingestion(request: Request) throws -> ResponseRepresentable {
+        let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "").json!
+        
+        for i in 0...resp.array!.count {
+            do {
+                var newPark = try Parking(node: resp[i], in: ["from" : "JSON"])
+                
+                do {
+                    try newPark.save()
+                } catch {
+                    print(error.localizedDescription)
+                    print(error)
+                }
+            } catch {
+                print(error)
+            }
+        }
     }
     
     func create(request: Request) throws -> ResponseRepresentable {
@@ -81,7 +99,7 @@ final class ParkingController {
         try parking.delete()
         return JSON([:])
     }
-    
+
     func dataImport(request: Request, parking: Parking) throws -> ResponseRepresentable {
         let file = "/Data/SampleTimedParking.json"
         let fileComponents = file.components(separatedBy: ".")
