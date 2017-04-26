@@ -3,10 +3,9 @@ import Vapor
 import VaporPostgreSQL
 import PostgreSQL
 
-let drop = Droplet(
-    preparations: [Parking.self],
-    providers: [VaporPostgreSQL.Provider.self]
-)
+let drop = Droplet()
+try drop.addProvider(VaporPostgreSQL.Provider.self)
+drop.preparations.append(Parking.self)
 
 drop.group("api") { api in
     api.group("v1") { v1 in
@@ -15,7 +14,7 @@ drop.group("api") { api in
             
             parking.get("subset", handler: parkingController.parkingSubset)
             //        parking.get("park", handler: parkingController.park)
-            parking.get("ingest", handler: parkingController.ingestion)
+//            parking.get("ingest", handler: parkingController.ingestion)
         }
     }
 }

@@ -19,32 +19,59 @@ final class ParkingController {
          LLong: Represents lower right longitude coordinate of current bounding box
          */
         
-        guard let ulatleft = request.parameters["ULat"]?.float, // x1
-        let ulongleft = request.parameters["ULong"]?.float, // y1
-        let llatright = request.parameters["LLat"]?.float, // x2
-        let llongright = request.parameters["LLong"]?.float else { // y2
+        guard let x1 = request.data["ULat"]?.float,         // TOP LEFT
+        let y1 = request.data["ULong"]?.float,              // TOP LEFT
+        let x2 = request.data["LLat"]?.float,               // BOTTOM RIGHT
+        let y2 = request.data["LLong"]?.float else {        // BOTTOM RIGHT
             throw Abort.badRequest
         }
         
-        let ulatright = ulatleft + (llatright - ulatleft)
-        let ulongright = ulongleft
-        let llatleft = ulatleft
-        let llongleft = ulongleft + (llongright - ulongleft)
-        
-//        let parkings = try Parking.query().filter("bounding_x1", .greaterThanOrEquals, ulatleft)
-//        .filter("bounding_x2", .lessThanOrEquals, )
-        
-        var parkings: [Node]
+        let x3 = x1 + (x2 - x1) // TOP RIGHT
+        let y3 = y1             // TOP RIGHT
+        let x4 = x1             // BOTTOM LEFT
+        let y4 = y1 + (y2 - y1) // BOTTOM LEFT
         
         if let mysql = drop.database?.driver as? PostgreSQLDriver {
-            let parkings = try mysql.raw("SELECT * FROM parkings WHERE (bounding_x1 BETWEEN \(ulatleft) AND \(llatright)) AND (bounding_y1 BETWEEN \(ulongleft) AND \(llongright))").nodeArray
+            let parkings = try mysql
+                .raw("SELECT * FROM parkings WHERE ((bounding_x1 BETWEEN \(x1) AND \(x2)) AND (bounding_y1 BETWEEN \(y1) AND \(y2))) OR ((bounding_x2 BETWEEN \(x1) AND \(x2)) AND (bounding_y2 BETWEEN \(y1) AND \(y2))) OR (((bounding_x1 + (bounding_x2 - bounding_x1)) BETWEEN \(x1) AND \(x2)) AND (bounding_y1 BETWEEN \(y1) AND \(y2))) OR ((bounding_x1 BETWEEN \(x1) AND \(x2)) AND ((bounding_y1 - (bounding_y2 - bounding_y1)) BETWEEN \(y1) AND \(y2)))")
+            print("Break Point")
+        }
+        
+//        let parkings = try Parking
+//            .query()
+//            .makeQuery()
+//            .or { orGroup in
+//                // MARK: Bounding Boxes within Frame
+//                
+//                // Checking if TOP LEFT corner is within Frame
+//                try orGroup.and { andGroup in
+//                    try andGroup.filter("bounding_x1", .greaterThanOrEquals, x1)
+//                    try andGroup.filter("bounding_x1", .lessThanOrEquals, x2)
+//                    try andGroup.filter("bounding_y1", .greaterThanOrEquals, y1)
+//                    try andGroup.filter("bounding_y1", .lessThanOrEquals, y2)
+//                }
+//                
+//                // Checking if BOTTOM RIGHT corner is within Frame
+//                try orGroup.and { andGroup in
+//                    try andGroup.filter("bounding_x2", .greaterThanOrEquals, x1)
+//                    try andGroup.filter("bounding_x2", .lessThanOrEquals, x2)
+//                    try andGroup.filter("bounding_y2", .greaterThanOrEquals, y1)
+//                    try andGroup.filter("bounding_y2", .lessThanOrEquals, y2)
+//                }
+//            }
+//            .all()
+        
+        
         
 //        select *
 //        from parkings
 //        where
 //        bounding_x1 > ulat and bounding_x1 < llat AND bounding_y1 > ulong and bounding_y1 < llong
+//        OR
 //        bounding_x2 > ulat and bounding_x2 < llat AND bounding_y2 > ulong and bounding_y2 < llong
+//        OR
 //        calc_bounding_x3 > ulat and calc_bounding_x3 < llat AND calc_bounding_y3 > ulong and calc_bounding_y3 < llong
+//        OR
 //        calc_bounding_x4 > ulat and calc_bounding_x4 < llat AND calc_bounding_y4 > ulong and calc_bounding_y4 < llong
 //        
 //        select *
@@ -55,7 +82,8 @@ final class ParkingController {
 //        ulat > calc_bounding_x3 and ulat < llat AND calc_bounding_y3 > ulong and calc_bounding_y3 < llong
 //        calc_bounding_x4 > ulat and calc_bounding_x4 < llat AND calc_bounding_y4 > ulong and calc_bounding_y4 < llong
         
-        return parkings as! ResponseRepresentable
+//        return parkings as! ResponseRepresentable
+        return "Hello"
     }
     
     func ingestion(request: Request) throws -> ResponseRepresentable {
@@ -75,6 +103,8 @@ final class ParkingController {
                 print(error)
             }
         }
+        
+        return try Parking.all().makeJSON()
     }
     
     func create(request: Request) throws -> ResponseRepresentable {
@@ -98,24 +128,6 @@ final class ParkingController {
     func delete(request: Request, parking: Parking) throws -> ResponseRepresentable {
         try parking.delete()
         return JSON([:])
-    }
-
-    func dataImport(request: Request, parking: Parking) throws -> ResponseRepresentable {
-        let file = "/Data/SampleTimedParking.json"
-        let fileComponents = file.components(separatedBy: ".")
-        let path = Bundle.main.path(forResource: fileComponents[0], ofType: fileComponents[1])
-        let text = try! String(contentsOfFile: path!) // read as string
-        
-        guard let json = try! JSONSerialization.jsonObject(with: text.data(using: .utf8)!, options: []) as? [String: Any] else {
-            throw JSONError.self as! Error
-        }
-        
-        let allData = json["features"]
-        
-        let allTimedParkingData = try allData.map({ (entry) -> Context in
-            return try parking.makeNode(context: entry as! Context)
-        })
-        return allTimedParkingData as! ResponseRepresentable
     }
     
     //  TODO: Make a get method route that takes in bounding rectangle coordinates and returns JSON data of all data that intersects with that view.
