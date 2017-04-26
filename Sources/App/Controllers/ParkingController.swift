@@ -45,7 +45,7 @@ final class ParkingController {
         
         if let mysql = drop.database?.driver as? PostgreSQLDriver {
             let parkings = try mysql
-                .raw("SELECT * FROM parkings WHERE ((bounding_x1 BETWEEN \(x1) AND \(x2)) AND (bounding_y1 BETWEEN \(y1) AND \(y2))) OR ((bounding_x2 BETWEEN \(x1) AND \(x2)) AND (bounding_y2 BETWEEN \(y1) AND \(y2))) OR (((bounding_x1 + (bounding_x2 - bounding_x1)) BETWEEN \(x1) AND \(x2)) AND (bounding_y1 BETWEEN \(y1) AND \(y2))) OR ((bounding_x1 BETWEEN \(x1) AND \(x2)) AND ((bounding_y1 - (bounding_y2 - bounding_y1)) BETWEEN \(y1) AND \(y2)))")
+                .raw("SELECT * FROM parkings WHERE ((bounding_x1 BETWEEN \(x1) AND \(x2)) AND (bounding_y1 BETWEEN \(y1) AND \(y2))) OR ((bounding_x2 BETWEEN \(x1) AND \(x2)) AND (bounding_y2 BETWEEN \(y1) AND \(y2))) OR (((bounding_x1 + (bounding_x2 - bounding_x1)) BETWEEN \(x1) AND \(x2)) AND (bounding_y1 BETWEEN \(y1) AND \(y2))) OR ((bounding_x1 BETWEEN \(x1) AND \(x2)) AND ((bounding_y1 - (bounding_y2 - bounding_y1)) BETWEEN \(y1) AND \(y2))) OR ((\(x1) BETWEEN bounding_x1 AND bounding_x2) AND (\(y1) BETWEEN bounding_y1 AND bounding_y2)) OR ((\(x2) BETWEEN bounding_x1 AND bounding_x2) AND (\(y2) BETWEEN bounding_y1 AND bounding_y2)) OR ((\(x3) BETWEEN bounding_x1 AND bounding_x2) AND (\(y3) BETWEEN bounding_y1 AND bounding_y2)) OR ((\(x4) BETWEEN bounding_x1 AND bounding_x2) AND (\(y4) BETWEEN bounding_y1 AND bounding_y2))")
             print("Break Point")
         }
         
