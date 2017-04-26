@@ -4,6 +4,18 @@ import VaporPostgreSQL
 
 final class ParkingController {
     
+    /*
+     API call for getting all blocks intersecting with the view's bounding rectangle.
+     http://parkr-api.herokuapp.com/parking/subset?ULat=37.766952&ULong=-122.412581&LLat=37.765095&LLong=-122.413949
+     
+     Base URL: http://parkr-api.herokuapp.com/parking/subset
+     
+     Parameters
+     ULat: Represents upper left latitude coordinate of current bounding box
+     ULong: Represents upper left longitude coordinate of current bounding box
+     LLat: Represents lower right latitude coordinate of current bounding box
+     LLong: Represents lower right longitude coordinate of current bounding box
+     */
     func parkingSubset(request: Request) throws -> ResponseRepresentable {
         
         /*
@@ -61,8 +73,6 @@ final class ParkingController {
 //            }
 //            .all()
         
-        
-        
 //        select *
 //        from parkings
 //        where
@@ -86,6 +96,12 @@ final class ParkingController {
         return "Hello"
     }
     
+    /*
+     Exists to ingest data from the dataset we're dealing with and transform it into a format that's usable in our DB
+     Once in the DB, we're free to query for a square of data that would intersect the viewfinder on the ios app, and turn things into objects which would allow us to do analysis.
+     This will eventually be used to ingest multiple data sets and normalize the data.
+     */
+    
     func ingestion(request: Request) throws -> ResponseRepresentable {
         let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "").json!
         
@@ -103,7 +119,6 @@ final class ParkingController {
                 print(error)
             }
         }
-        
         return try Parking.all().makeJSON()
     }
     
@@ -117,12 +132,7 @@ final class ParkingController {
         let new = try request.parking()
         let parking = parking
         
-        parking.dayRange = new.dayRange
-        parking.hourLimit = new.hourLimit
-        parking.hoursBegin = new.hoursBegin
-        parking.hoursEnd = new.hoursEnd
-        
-        return parking
+        return try Parking.all().makeJSON()
     }
     
     func delete(request: Request, parking: Parking) throws -> ResponseRepresentable {
@@ -137,5 +147,9 @@ extension Request {
     func parking() throws -> Parking {
         guard let json = json else { throw Abort.badRequest }
         return try Parking(node: json)
+    }
+
+    func makeResource() -> Resource<Parking> {
+        return Resource()
     }
 }
