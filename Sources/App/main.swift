@@ -3,12 +3,10 @@ import Vapor
 import VaporPostgreSQL
 import PostgreSQL
 
-let drop = Droplet(
-    preparations: [Parking.self],
-)
+let drop = Droplet()
 
 try drop.addProvider(VaporPostgreSQL.Provider.self)
-drop.add
+drop.preparations.append(Parking.self)
 
 drop.group("api") { api in
     api.group("v1") { v1 in
