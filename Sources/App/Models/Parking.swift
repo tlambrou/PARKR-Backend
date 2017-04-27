@@ -191,13 +191,17 @@ final class Parking: Model {
             rppArray.append(RPPArea(areaChar: rppArea3))
         }
         
+        if rppArray.count == 0 {
+            throw RuleIngestionError.badFormatting
+        }
+        
         return rppArray
     }
     
     private func transformDayRange(node: Node) throws -> DayRange {
         let dateString = node["days"]?.string
         
-        let days = dateString?.components(separatedBy: "-")
+        let days = (dateString?.range(of:"-") != nil) ? dateString?.components(separatedBy: "-") : dateString?.components(separatedBy: "_")
         
         return (Weekday(dayChar: days![0]), Weekday(dayChar: days![1]))
     }

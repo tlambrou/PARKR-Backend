@@ -15,7 +15,7 @@ drop.group("api") { api in
             
             parking.get("subset", handler: parkingController.parkingSubset)
             //        parking.get("park", handler: parkingController.park)
-            //        parking.get("ingest", handler: parkingController.ingestion)
+            parking.get("ingest", handler: parkingController.ingestion)
         }
     }
 }

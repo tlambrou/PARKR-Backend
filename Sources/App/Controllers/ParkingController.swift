@@ -19,8 +19,9 @@ final class ParkingController {
     func parkingSubset(request: Request) throws -> ResponseRepresentable {
         
         /*
+         37.7933719729637
          API call for getting all blocks intersecting with the view's bounding rectangle.
-         http://parkr-api.herokuapp.com/parking/subset?ULat=37.766952&ULong=-122.412581&LLat=37.765095&LLong=-122.413949
+         http://parkr-api.herokuapp.com/api/v1/parking/subset?ULat=37.7933719729637&ULong=-122.40671217441559&LLat=37.78970081933231&LLong=-122.40345597267151
          
          Base URL: http://parkr-api.herokuapp.com/parking/subset
          
@@ -47,6 +48,7 @@ final class ParkingController {
             let parkings = try mysql
                 .raw("SELECT * FROM parkings WHERE ((bounding_x1 BETWEEN \(x1) AND \(x2)) AND (bounding_y1 BETWEEN \(y1) AND \(y2))) OR ((bounding_x2 BETWEEN \(x1) AND \(x2)) AND (bounding_y2 BETWEEN \(y1) AND \(y2))) OR (((bounding_x1 + (bounding_x2 - bounding_x1)) BETWEEN \(x1) AND \(x2)) AND (bounding_y1 BETWEEN \(y1) AND \(y2))) OR ((bounding_x1 BETWEEN \(x1) AND \(x2)) AND ((bounding_y1 - (bounding_y2 - bounding_y1)) BETWEEN \(y1) AND \(y2))) OR ((\(x1) BETWEEN bounding_x1 AND bounding_x2) AND (\(y1) BETWEEN bounding_y1 AND bounding_y2)) OR ((\(x2) BETWEEN bounding_x1 AND bounding_x2) AND (\(y2) BETWEEN bounding_y1 AND bounding_y2)) OR ((\(x3) BETWEEN bounding_x1 AND bounding_x2) AND (\(y3) BETWEEN bounding_y1 AND bounding_y2)) OR ((\(x4) BETWEEN bounding_x1 AND bounding_x2) AND (\(y4) BETWEEN bounding_y1 AND bounding_y2))")
             print("Break Point")
+            print(parkings)
         }
         
 //        let parkings = try Parking
@@ -103,7 +105,7 @@ final class ParkingController {
      */
     
     func ingestion(request: Request) throws -> ResponseRepresentable {
-        let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "").json!
+        let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json?$limit=10000", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "").json!
         
         for i in 0...resp.array!.count {
             do {
