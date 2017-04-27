@@ -127,19 +127,19 @@ final class Parking: Model {
   
 
     static func prepare(_ database: Vapor.Database) throws {
-        try database.create("parkings", closure: { user in
-            user.id()
-            user.int("hours_begin")
-            user.int("hours_end")
-            user.double("hour_limit")
-            user.int("original_id")
-            user.string("day_range")
-            user.string("rpp_region") // I'm so sorry about this
-            user.double("bounding_x1")
-            user.double("bounding_y1")
-            user.double("bounding_x2")
-            user.double("bounding_y2")
-            user.custom("rule_line", type: "TEXT")
+        try database.create("parkings", closure: { parkings in
+            parkings.id()
+            parkings.int("hours_begin")
+            parkings.int("hours_end")
+            parkings.double("hour_limit")
+            parkings.int("original_id")
+            parkings.string("day_range")
+            parkings.string("rpp_region") // I'm so sorry about this
+            parkings.double("bounding_x1")
+            parkings.double("bounding_y1")
+            parkings.double("bounding_x2")
+            parkings.double("bounding_y2")
+            parkings.custom("rule_line", type: "TEXT")
         })
     }
     
@@ -155,8 +155,8 @@ final class Parking: Model {
             let pointAArray: [Double] = try node.extract("coordinates").array[0]
             let poingBArray: [Double] = try node.extract("coordinates").array[1]
             
-            let pointA = CGPoint(x: pointAArray[0], y: pointAArray[1])
-            let pointB = CGPoint(x: poingBArray[0], y: poingBArray[1])
+            let pointA = CGPoint(x: pointAArray[1], y: pointAArray[0])
+            let pointB = CGPoint(x: poingBArray[1], y: poingBArray[0])
             
             return CGRect(origin: pointA, size: pointA.sizeOfBounds(point: pointB))
         default:
@@ -197,8 +197,14 @@ final class Parking: Model {
     private func transformDayRange(node: Node) throws -> DayRange {
         let dateString = node["days"]?.string
         
-        let days = dateString?.components(separatedBy: "-")
+        var days: [String]
         
-        return (Weekday(dayChar: days![0]), Weekday(dayChar: days![1]))
+        if (dateString?.contains("_"))! {
+            days = (dateString?.components(separatedBy: "_"))!
+        } else {
+            days = (dateString?.components(separatedBy: "-"))!
+        }
+        
+        return (Weekday(dayChar: days[0]), Weekday(dayChar: days[1]))
     }
 }

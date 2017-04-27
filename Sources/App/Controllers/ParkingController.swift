@@ -103,7 +103,7 @@ final class ParkingController {
      */
     
     func ingestion(request: Request) throws -> ResponseRepresentable {
-        let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "").json!
+        let resp = try drop.client.get("https://data.sfgov.org/resource/2ehv-6arf.json?$limit=10000", headers: ["X-App-Token": "kvtD98auzsy6uHJqGIpB7u1tq"], query: [:], body: "").json!
         
         for i in 0...resp.array!.count {
             do {
