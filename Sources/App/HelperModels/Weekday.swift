@@ -26,6 +26,8 @@ public enum Weekday: Int {
             self = .Saturday
         case "Su":
             self = .Sunday
+        case "S": //government software is literally the worst
+            self = .Saturday
         default:
             self = .Monday
         }

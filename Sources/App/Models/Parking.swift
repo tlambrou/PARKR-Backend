@@ -191,20 +191,24 @@ final class Parking: Model {
             rppArray.append(RPPArea(areaChar: rppArea3))
         }
         
+        if rppArray.count == 0 {
+            throw RuleIngestionError.badFormatting
+        }
+        
         return rppArray
     }
     
     private func transformDayRange(node: Node) throws -> DayRange {
         let dateString = node["days"]?.string
         
-        var days: [String]
+        let days = (dateString?.range(of:"-") != nil) ? dateString?.components(separatedBy: "-") : dateString?.components(separatedBy: "_")
         
-        if (dateString?.contains("_"))! {
-            days = (dateString?.components(separatedBy: "_"))!
-        } else {
-            days = (dateString?.components(separatedBy: "-"))!
-        }
+//        if (dateString?.contains("_"))! {
+//            days = (dateString?.components(separatedBy: "_"))!
+//        } else {
+//            days = (dateString?.components(separatedBy: "-"))!
+//        }
         
-        return (Weekday(dayChar: days[0]), Weekday(dayChar: days[1]))
+        return (Weekday(dayChar: days![0]), Weekday(dayChar: days![1]))
     }
 }
