@@ -51,7 +51,7 @@ final class Parking: Model {
                 self.ruleLine = [CGPoint]()
                 
                 for item in (geomNode["coordinates"]?.array!)! {
-                    ruleLine.append(CGPoint(x: (item.array?[0].double)!, y: (item.array?[1].double)!))
+                    ruleLine.append(CGPoint(x: CGFloat((item.array?[0].double!)!), y: CGFloat((item.array?[1].double!)!)))
                 }
                 
                 self.boundingBox = try transformGeom(node: geomNode)
@@ -160,8 +160,8 @@ final class Parking: Model {
             let pointAArray: [Double] = try node.extract("coordinates").array[0]
             let poingBArray: [Double] = try node.extract("coordinates").array[1]
             
-            let pointA = CGPoint(x: pointAArray[1], y: pointAArray[0])
-            let pointB = CGPoint(x: poingBArray[1], y: poingBArray[0])
+            let pointA = CGPoint(x: CGFloat(pointAArray[1]), y: CGFloat(pointAArray[0]))
+            let pointB = CGPoint(x: CGFloat(poingBArray[1]), y: CGFloat(poingBArray[0]))
             
             return CGRect(origin: pointA, size: pointA.sizeOfBounds(point: pointB))
         default:
@@ -169,8 +169,8 @@ final class Parking: Model {
             let xs: [Double] = points.map{$0[0]}
             let ys: [Double] = points.map{$0[1]}
             
-            let pointA = CGPoint(x: xs.max()!, y: ys.max()!)
-            let pointB = CGPoint(x: xs.min()!, y: ys.min()!)
+            let pointA = CGPoint(x: CGFloat(xs.max()!), y: CGFloat(ys.max()!))
+            let pointB = CGPoint(x: CGFloat(xs.min()!), y: CGFloat(ys.min()!))
             
             return CGRect(origin: pointA, size: pointA.sizeOfBounds(point: pointB))
         }
