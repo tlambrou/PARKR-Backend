@@ -4,6 +4,8 @@ import PostgreSQL
 
 typealias DayRange = (Weekday, Weekday)
 
+var regTypes = Set<String>()
+
 
 final class Parking: Model {
     var id: Node?
@@ -34,6 +36,9 @@ final class Parking: Model {
     init(node: Node, in context: Context) throws {
         if let context = context as? Dictionary<String, String>, let from = context["from"], from == "JSON" {
             let regulationType: String? = try node.extract("regulation")
+            
+            regTypes.insert(regulationType ?? "")
+            
             if regulationType == "RPP" {
                 self.id = try node.extract("id")
                 self.hoursBegin = try node.extract("hours_begin")
@@ -202,12 +207,6 @@ final class Parking: Model {
         let dateString = node["days"]?.string
         
         let days = (dateString?.range(of:"-") != nil) ? dateString?.components(separatedBy: "-") : dateString?.components(separatedBy: "_")
-        
-//        if (dateString?.contains("_"))! {
-//            days = (dateString?.components(separatedBy: "_"))!
-//        } else {
-//            days = (dateString?.components(separatedBy: "-"))!
-//        }
         
         return (Weekday(dayChar: days![0]), Weekday(dayChar: days![1]))
     }
