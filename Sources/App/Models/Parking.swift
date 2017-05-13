@@ -121,10 +121,10 @@ final class Parking: Model {
                 "day_range": self.dayRange.0.dayChar + "-" + self.dayRange.1.dayChar,
                 
                 "rpp_region": rppChars.joined(separator: ","),
-                "bounding_x1": self.boundingBox.minX,
-                "bounding_y1": self.boundingBox.minY,
-                "bounding_x2": self.boundingBox.maxX,
-                "bounding_y2": self.boundingBox.maxY,
+                "bounding_x1": self.boundingBox.minX.native,
+                "bounding_y1": self.boundingBox.minY.native,
+                "bounding_x2": self.boundingBox.maxX.native,
+                "bounding_y2": self.boundingBox.maxY.native,
                 "rule_line": ruleLineString.map{$0.map{String($0)}.joined(separator: ",")}.joined(separator: "/") //lol k
             ])
         }

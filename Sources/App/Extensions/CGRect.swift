@@ -9,19 +9,19 @@
 import Foundation
 
 public extension CGRect {
-    var minX: Double {
-        return self.origin.x.native
+    var minX: CGFloat {
+        return self.origin.x
     }
     
-    var minY: Double {
-        return self.origin.y.native
+    var minY: CGFloat {
+        return self.origin.y
     }
     
-    var maxX: Double {
-        return self.origin.x.native + self.size.width.native
+    var maxX: CGFloat {
+        return self.origin.x + self.size.width
     }
     
-    var maxY: Double {
-        return self.origin.y.native + self.size.height.native
+    var maxY: CGFloat {
+        return self.origin.y + self.size.height
     }
 }
