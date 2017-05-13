@@ -73,7 +73,7 @@ final class Parking: Model {
             guard let x2: Double = try node.extract("bounding_x2") else {return}
             guard let y2: Double = try node.extract("bounding_y2") else {return}
             
-            let (pointA, pointB) = (CGPoint(x: x1, y: y1), CGPoint(x: x2, y: y2))
+            let (pointA, pointB) = (CGPoint(x: CGFloat(x1), y: CGFloat(y1)), CGPoint(x: CGFloat(x2), y: CGFloat(y2)))
             
             self.boundingBox = CGRect(origin: pointA, size: pointA.sizeOfBounds(point: pointB))
             
@@ -89,7 +89,7 @@ final class Parking: Model {
             self.dayRange = (Weekday(dayChar: dayRangeChars[0]), Weekday(dayChar: dayRangeChars[1]))
             
             let ruleLineString: String = try node.extract("rule_line")
-            self.ruleLine = ruleLineString.components(separatedBy: "/").map{CGPoint(x: Double($0.components(separatedBy: ",")[0])!, y: Double($0.components(separatedBy: ",")[1])!)}
+            self.ruleLine = ruleLineString.components(separatedBy: "/").map{CGPoint(x: CGFloat(Double($0.components(separatedBy: ",")[0])!), y: CGFloat(Double($0.components(separatedBy: ",")[1])!))}
         }
     }
 
@@ -121,10 +121,10 @@ final class Parking: Model {
                 "day_range": self.dayRange.0.dayChar + "-" + self.dayRange.1.dayChar,
                 
                 "rpp_region": rppChars.joined(separator: ","),
-                "bounding_x1": boundingBox.minX.native,
-                "bounding_y1": boundingBox.minY.native,
-                "bounding_x2": boundingBox.maxX.native,
-                "bounding_y2": boundingBox.maxY.native,
+                "bounding_x1": self.boundingBox.minX.native,
+                "bounding_y1": self.boundingBox.minY.native,
+                "bounding_x2": self.boundingBox.maxX.native,
+                "bounding_y2": self.boundingBox.maxY.native,
                 "rule_line": ruleLineString.map{$0.map{String($0)}.joined(separator: ",")}.joined(separator: "/") //lol k
             ])
         }
