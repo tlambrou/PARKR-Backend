@@ -2,12 +2,6 @@
   "autoPin": true,
   "pins": [
     {
-      "package": "Alamofire",
-      "reason": null,
-      "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
-      "version": "4.4.0"
-    },
-    {
       "package": "CLibreSSL",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/clibressl.git",
@@ -86,12 +80,6 @@
       "version": "1.0.1"
     },
     {
-      "package": "ObjectMapper",
-      "reason": null,
-      "repositoryURL": "https://github.com/Hearst-DD/ObjectMapper.git",
-      "version": "2.2.5"
-    },
-    {
       "package": "PathIndexable",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/path-indexable.git",
@@ -108,6 +96,12 @@
       "reason": null,
       "repositoryURL": "https://github.com/vapor/postgresql.git",
       "version": "1.1.0"
+    },
+    {
+      "package": "Punctual",
+      "reason": null,
+      "repositoryURL": "https://github.com/harlanhaskins/Punctual.swift",
+      "version": "1.0.1"
     },
     {
       "package": "Routing",
