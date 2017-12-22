@@ -6,7 +6,7 @@
         "repositoryURL": "https://github.com/vapor/async.git",
         "state": {
           "branch": "beta",
-          "revision": "321effb198aedbeb987524dfd17c6e53f0c8926e",
+          "revision": "e2dec3c2013d5c71e3ebace661344de7d1259b79",
           "version": null
         }
       },
@@ -43,6 +43,15 @@
         "state": {
           "branch": "beta",
           "revision": "2009aee5a9641760b37e39a10e5fe7a948afb0c9",
+          "version": null
+        }
+      },
+      {
+        "package": "Fluent",
+        "repositoryURL": "https://github.com/vapor/fluent.git",
+        "state": {
+          "branch": "beta",
+          "revision": "6efe49ef8c362c105d950a24b94a0ce96600b8c8",
           "version": null
         }
       },
