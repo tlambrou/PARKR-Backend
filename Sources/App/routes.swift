@@ -19,6 +19,7 @@ final class Routes: RouteCollection {
     func boot(router: Router) throws {
         let apiGroup = router.grouped("api")
         let versionOneGroup = apiGroup.grouped("v1")
+        
         versionOneGroup.get("hello") { req in
             return Future("Hello, World!")
         }
@@ -29,20 +30,29 @@ final class Routes: RouteCollection {
         }
         
         versionOneGroup.get("park") { req in
-            return req.withConnection(to: .sqlite, closure: { db -> Future<Parking> in
+            return req.withConnection(to: .sqlite) { db -> Future<Parking> in
                 let parking = Parking(hoursBegin: 2, hoursEnd: 5, hourLimit: 1)
                 return parking.save(on: db).map(to: Parking.self) {parking}
-            })
+            }
+        }
+        
+        versionOneGroup.get("parkResponse") { req in
+            return req.withConnection(to: .sqlite) { db -> Future<Response> in
+                let parking = Parking(hoursBegin: 2, hoursEnd: 5, hourLimit: 1)
+                return parking.save(on: db).map(to: Response.self) { _ in
+                    return Response(http: HTTPResponse(status: .created), using: req)
+                }
+            }
         }
         
         versionOneGroup.get("getAllPark") { (req) in
-            return req.withConnection(to: .sqlite, closure: { (db) in
+            return req.withConnection(to: .sqlite) { (db) in
                 return db.query(Parking.self).all()
-            })
+            }
         }
         
         versionOneGroup.get("getFirstPark") { (req) in
-            return req.withConnection(to: .sqlite, closure: { (db) in
+            return req.withConnection(to: .sqlite) { (db) in
                 return db.query(Parking.self).first().map(to: Parking.self) {
                     guard let park = $0 else {
                         throw Abort(.notFound, reason: "Could not find parking.")
@@ -50,22 +60,36 @@ final class Routes: RouteCollection {
                     
                     return park
                 }
-            })
+            }
         }
         
+        versionOneGroup.get("updatePark") { req in
+            return req.withConnection(to: .sqlite) { (db) -> Future<Parking> in
+                return db.query(Parking.self).first().map(to: Parking.self) {
+                    guard let park = $0 else {
+                        throw Abort(.notFound, reason: "Could not find parking.")
+                    }
+                    
+                    return park
+                }.flatMap(to: Parking.self) { park in
+                    park.hoursBegin = 10
+                    return park.update(on: db).map(to: Parking.self) {park}
+                }
+            }
+        }
         
-        versionOneGroup.get("deletePark") { (req) -> Future<Parking> in
-            return req.withConnection(to: .sqlite, closure: { (db) in
+        versionOneGroup.get("deletePark") { (req)  in
+            return req.withConnection(to: .sqlite) { (db) -> Future<Parking> in
                  return db.query(Parking.self).first().map(to: Parking.self) {
                     guard let park = $0 else {
                         throw Abort(.notFound, reason: "Could not find parking.")
                     }
                     
                     return park
-                }.flatMap(to: Parking.self, { (park) in
+                }.flatMap(to: Parking.self) { (park) in
                     return park.delete(on: db).map(to: Parking.self) {park}
-                })
-            })
+                }
+            }
         }
     }
 }

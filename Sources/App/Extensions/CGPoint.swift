@@ -12,7 +12,6 @@ public extension CGPoint {
         let xDist = self.x - point.x
         let yDist = self.y - point.y
         
-        
         return CGSize(width: xDist, height: yDist)
     }
 }
