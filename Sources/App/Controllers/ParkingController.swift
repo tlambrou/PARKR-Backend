@@ -9,6 +9,7 @@ final class ParkingController {
      http://0.0.0.0:8888/api/v1/parking/subset?ULat=37.796380&ULong=-122.442485&LLat=37.778121&LLong=-122.417637
      
      Base URL: http://parkr-api.herokuapp.com/parking/subset
+     Production Test URL: http://parkr-api.herokuapp.com/parking/subset?ULat=37.796380&ULong=-122.442485&LLat=37.778121&LLong=-122.417637
      
      Parameters
      ULat: Represents upper left latitude coordinate of current bounding box
